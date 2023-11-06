@@ -1,42 +1,42 @@
-# Maintainer: Barnabé di Kartola <barnabedikartola@gmail.com>
+# Maintainer: Jan Neumann <neum dot ja at gmail dot com>
+# Contributor: Michael Straube <straubem@gmx.de>
 
-pkgname=biglinux-package-template
-pkgdesc="Package template for biglinux"
-# depends=('')
-# makedepends=('')
-# conflicts=('')
-pkgver=$(date +%y.%m.%d)
-pkgrel=$(date +%H%M)
-arch=('any')
-license=('GPL3')
-url="https://github.com/biglinux/$pkgname"
-provides=("$pkgname")
+pkgname=latte-dock
+_gitname=latte-dock
+pkgver=0.10.9
+pkgrel=10
+epoch=1
+pkgdesc='Latte is a dock based on plasma frameworks that provides an elegant and intuitive experience for your tasks and plasmoids'
+arch=('x86_64')
+url='https://invent.kde.org/plasma/latte-dock'
+license=('GPL')
+depends=('plasma-framework5' 'plasma-workspace' 'kirigami2' 'knewstuff5' 'hicolor-icon-theme' 'plasma-wayland-protocols')
+optdepends=('libunity: quicklists, counters, and progress bars for apps using libunity')
+makedepends=('git' 'cmake' 'extra-cmake-modules' 'python')
+conflicts=('latte-dock')
+provides=('latte-dock')
 source=("git+${url}.git")
-md5sums=('SKIP')
-if [ -e "${pkgname}.install" ];then
-    install=${pkgname}.install
-elif [ -e "pkgbuild.install" ];then
-    install=pkgbuild.install
-fi
+sha256sums=('SKIP')
+
+# pkgver() {
+#    cd ${_gitname}
+# 
+#    #printf "r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
+#    
+# }
+
+build() {
+   cd ${_gitname}
+
+   mkdir build && cd build
+   cmake -DCMAKE_INSTALL_PREFIX=/usr \
+         -DCMAKE_BUILD_TYPE=Master ..
+
+  
+}
 
 package() {
-    # Verify default folder
-    if [ -d "${srcdir}/${pkgname}/${pkgname}" ]; then
-        InternalDir="${srcdir}/${pkgname}/${pkgname}"
-    else
-        InternalDir="${srcdir}/${pkgname}"
-    fi
+  
+   make -C ${_gitname}/build DESTDIR=${pkgdir} install
 
-    # Copy files
-    if [ -d "${InternalDir}/usr" ]; then
-        cp -r "${InternalDir}/usr" "${pkgdir}/"
-    fi
-
-    if [ -d "${InternalDir}/etc" ]; then
-        cp -r "${InternalDir}/etc" "${pkgdir}/"
-    fi
-
-    if [ -d "${InternalDir}/opt" ]; then
-        cp -r "${InternalDir}/opt" "${pkgdir}/"
-    fi
 }
